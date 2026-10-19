@@ -1,5 +1,6 @@
 package br.com.hinkelman.todolist.task;
 
+import br.com.hinkelman.todolist.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,20 @@ public class TaskController {
     @GetMapping("/")
     public List<TaskModel> list(HttpServletRequest request) {
         var id = request.getAttribute(("idUser"));
-        var tasks = this.taskRepository.findByIdUser((UUID) id);
-        return tasks;
+        return this.taskRepository.findByIdUser((UUID) id);
     }
+
+
+    @PutMapping("/{id}")
+    public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
+
+        var task= this.taskRepository.findById(id).orElse(null);
+
+        Utils.CopyNonNullProperties(taskModel,task);
+
+        return this.taskRepository.save(task);
+    }
+
+
+
 }
